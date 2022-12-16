@@ -1,70 +1,71 @@
 
-import React,{useState ,useRef, useEffect} from 'react'
+import React,{useState ,useRef, useEffect,FormEvent} from 'react'
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { MdDone } from "react-icons/md";
-import { Todo } from "../model";
+import { ITask } from "../Interface";
 type Props = {
     key:number
-    todo:Todo,
-    todos: Todo[],
-    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+    task:ITask,
+    todos: ITask[],
+    setTodos: React.Dispatch<React.SetStateAction<ITask[]>>,
   }
-const SingleTodo: React.FC<Props>= ({ todo,todos, setTodos,  key}) => {
+const SingleTodo: React.FC<Props>= ({ task,todos, setTodos,  key}) => {
     const [edit, setEdit] = useState<boolean>(false);
-    const [editTodo, setEditTodo] = useState<string>(todo.todo);
+    const [editTask, setEditTask] = useState<string>(task.taskName);
+
     const inputRef = useRef<HTMLInputElement>(null)
+
     useEffect(()=>{
         inputRef.current?.focus()
-
-
     },[edit])
 
     
    const handleDone =(id:number)=>{
-    setTodos(todos.map((todo) => 
-    todo.id === id ? { ...todo, isDone: !todo.isDone } : todo))
+    setTodos(todos.map((task) => 
+    task.id === id ? { ...task, isDone: !task.isDone } : task))
    }
+   
    const handleDelete =(id:number)=>{
-    setTodos(todos.filter((todo) =>  todo.id !== id))
+    setTodos(todos.filter((task) =>  task.id !== id))
    }
 
-   const handleEdit = (e: React.FormEvent, id: number) => {
+   const handleEdit = (e: FormEvent, id: number) => {
     e.preventDefault();
     setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, todo: editTodo } : todo))
+      todos.map((task) => (task.id === id ? { ...task, taskName: editTask } : task))
     );
     setEdit(false);
   };
 
   return (
-    <form  className="todos__single"   onSubmit={(e) => handleEdit(e, todo.id)}>
+    <form  className="todos__single"   onSubmit={(e) => handleEdit(e, task.id)}>
          {edit ? (
             <input
-              value={editTodo}
-              onChange={(e) => setEditTodo(e.target.value)}
+              value={editTask}
+              onChange={(e) => setEditTask(e.target.value)}
               className="todos__single--text"
               ref={inputRef}
             />
           ) : 
-            todo.isDone?(
-                <s className="todos__single--text">{todo.todo}</s>
+            task.isDone?(
+                <s className="todos__single--text">{task.taskName}</s>
             ):(
-                <span className="todos__single--text">{todo.todo}</span>
+                <span className="todos__single--text">{task.taskName}</span>
             )
         }
     
         <div>
-           <span className="icon" onClick={() => handleDone(todo.id)}>
+           <span className="icon" onClick={() => handleDone(task.id)}>
             <MdDone style={{color:"green"}}/>
            </span>
            <span className="icon"  onClick={() => {
-                if (!edit && !todo.isDone) {
+                if (!edit && !task.isDone) {
                   setEdit(!edit);//true
                 }
               }}>
             <AiFillEdit style={{color:"blue"}}/>
            </span>
-           <span className="icon" onClick={() => handleDelete(todo.id)}>
+           <span className="icon" onClick={() => handleDelete(task.id)}>
             <AiFillDelete  style={{color:"red"}}/>
            </span>
         </div>
